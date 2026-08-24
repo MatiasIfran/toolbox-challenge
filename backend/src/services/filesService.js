@@ -1,18 +1,19 @@
-const { listFiles, downloadFile } = require('./externalApiService');
-const { parseCsv } = require('./csvParserService');
+const externalApiService = require('./externalApiService');
+const csvParserService = require('./csvParserService');
 
 async function getFilesData() {
-  const files = await listFiles();
+  const files = await externalApiService.listFiles();
 
   const results = await Promise.all(
     files.map(async (file) => {
+      let csvContent;
       try {
-        const csvContent = await downloadFile(file);
-        return parseCsv(file, csvContent);
+        csvContent = await externalApiService.downloadFile(file);
       } catch (err) {
         console.error(`Skipping file "${file}": ${err.message}`);
         return null;
       }
+      return csvParserService.parseCsv(file, csvContent);
     })
   );
 
