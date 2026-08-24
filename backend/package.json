@@ -5,7 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "test": "mocha \"test/**/*.test.js\" --exit"
+    "test": "mocha \"test/**/*.test.js\""
   },
   "engines": {
     "node": "14.x"
