@@ -29,6 +29,6 @@ describe('GET /files/data', () => {
 
     expect(response.status).to.equal(500);
     expect(response.headers['content-type']).to.match(/application\/json/);
-    expect(response.body).to.have.property('error');
+    expect(response.body).to.deep.equal({ error: 'Internal server error' });
   });
 });
