@@ -1,6 +1,10 @@
 const externalApiService = require('./externalApiService');
 const csvParserService = require('./csvParserService');
 
+async function getFilesList() {
+  return externalApiService.listFiles();
+}
+
 async function getFilesData() {
   const files = await externalApiService.listFiles();
 
@@ -20,4 +24,4 @@ async function getFilesData() {
   return results.filter((result) => result !== null);
 }
 
-module.exports = { getFilesData };
+module.exports = { getFilesList, getFilesData };

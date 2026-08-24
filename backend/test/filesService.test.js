@@ -2,7 +2,34 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const externalApiService = require('../src/services/externalApiService');
 const csvParserService = require('../src/services/csvParserService');
-const { getFilesData } = require('../src/services/filesService');
+const { getFilesList, getFilesData } = require('../src/services/filesService');
+
+describe('filesService.getFilesList', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns the file list from the external API as-is', async () => {
+    sinon.stub(externalApiService, 'listFiles').resolves(['file1.csv', 'file2.csv']);
+
+    const result = await getFilesList();
+
+    expect(result).to.deep.equal(['file1.csv', 'file2.csv']);
+  });
+
+  it('propagates the error when listing files fails', async () => {
+    sinon
+      .stub(externalApiService, 'listFiles')
+      .rejects(new Error('Failed to list files: 500 Internal Server Error'));
+
+    try {
+      await getFilesList();
+      expect.fail('expected getFilesList to throw');
+    } catch (err) {
+      expect(err.message).to.equal('Failed to list files: 500 Internal Server Error');
+    }
+  });
+});
 
 describe('filesService.getFilesData', () => {
   afterEach(() => {
