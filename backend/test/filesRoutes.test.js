@@ -48,6 +48,14 @@ describe('GET /files/data', () => {
     expect(response.body).to.deep.equal(data);
   });
 
+  it('passes the fileName query param through to the service', async () => {
+    const getFilesData = sinon.stub(filesService, 'getFilesData').resolves([]);
+
+    await request(app).get('/files/data?fileName=file1.csv');
+
+    expect(getFilesData.calledWith('file1.csv')).to.be.true;
+  });
+
   it('responds with 500 and a JSON error body when getFilesData fails', async () => {
     sinon.stub(filesService, 'getFilesData').rejects(new Error('Failed to list files: 500 Internal Server Error'));
 

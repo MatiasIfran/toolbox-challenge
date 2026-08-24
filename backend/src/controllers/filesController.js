@@ -11,7 +11,8 @@ async function getFilesList(req, res, next) {
 
 async function getFilesData(req, res, next) {
   try {
-    const data = await filesService.getFilesData();
+    const { fileName } = req.query;
+    const data = await filesService.getFilesData(fileName);
     res.json(data);
   } catch (err) {
     next(err);

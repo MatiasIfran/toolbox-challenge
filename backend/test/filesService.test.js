@@ -55,6 +55,21 @@ describe('filesService.getFilesData', () => {
     ]);
   });
 
+  it('downloads only the requested file when fileName is given, without listing all files', async () => {
+    const listFiles = sinon.stub(externalApiService, 'listFiles');
+    sinon
+      .stub(externalApiService, 'downloadFile')
+      .withArgs('file1.csv')
+      .resolves('file,text,number,hex\nfile1.csv,RgTya,64075909,70ad29aacf0b690b0467fe2b2767f765');
+
+    const result = await getFilesData('file1.csv');
+
+    expect(result).to.deep.equal([
+      { file: 'file1.csv', lines: [{ text: 'RgTya', number: 64075909, hex: '70ad29aacf0b690b0467fe2b2767f765' }] }
+    ]);
+    expect(listFiles.called).to.be.false;
+  });
+
   it('skips a file whose download fails and keeps processing the rest', async () => {
     sinon.stub(externalApiService, 'listFiles').resolves(['file1.csv', 'file2.csv', 'file3.csv']);
     sinon.stub(externalApiService, 'downloadFile').callsFake((file) => {

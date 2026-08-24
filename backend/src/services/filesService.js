@@ -5,8 +5,8 @@ async function getFilesList() {
   return externalApiService.listFiles();
 }
 
-async function getFilesData() {
-  const files = await externalApiService.listFiles();
+async function getFilesData(fileName) {
+  const files = fileName ? [fileName] : await externalApiService.listFiles();
 
   const results = await Promise.all(
     files.map(async (file) => {
