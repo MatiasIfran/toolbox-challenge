@@ -1,15 +1,8 @@
 const express = require('express');
-const filesService = require('../services/filesService');
+const filesController = require('../controllers/filesController');
 
 const router = express.Router();
 
-router.get('/data', async (req, res, next) => {
-  try {
-    const data = await filesService.getFilesData();
-    res.json(data);
-  } catch (err) {
-    next(err);
-  }
-});
+router.get('/data', filesController.getFilesData);
 
 module.exports = router;
