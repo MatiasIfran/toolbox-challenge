@@ -1,7 +1,7 @@
 {
-  "name": "tollbox-challenge-api",
+  "name": "toolbox-challenge-api",
   "version": "1.0.0",
-  "description": "REST API that consumes the external Tollbox API and reformats CSV file data as JSON",
+  "description": "REST API that consumes an external API and reformats CSV file data as JSON",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

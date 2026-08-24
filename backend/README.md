@@ -1,6 +1,6 @@
 # Backend API
 
-REST API built with Node.js + Express that consumes the external Tollbox API and reformats CSV file data as JSON.
+REST API built with Node.js + Express that consumes an external API and reformats CSV file data as JSON.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ npm install
 npm start
 ```
 
-The server listens on `http://localhost:3000` by default (configurable via the `PORT` environment variable).
+The server listens on `http://localhost:3000` (fixed in `src/config/config.js` — the challenge requires the app to run without depending on environment variables).
 
 ## Test
 
