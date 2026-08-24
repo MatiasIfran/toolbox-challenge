@@ -1,48 +1,48 @@
-const EXPECTED_COLUMNS = 4;
-const HEX_PATTERN = /^[0-9a-fA-F]{32}$/;
+const EXPECTED_COLUMNS = 4
+const HEX_PATTERN = /^[0-9a-fA-F]{32}$/
 
-function parseLine(row) {
-  const columns = row.split(',').map((value) => value.trim());
+function parseLine (row) {
+  const columns = row.split(',').map((value) => value.trim())
 
   if (columns.length !== EXPECTED_COLUMNS) {
-    return null;
+    return null
   }
 
-  const [, text, rawNumber, hex] = columns;
+  const [, text, rawNumber, hex] = columns
 
   if (!text) {
-    return null;
+    return null
   }
 
   if (!rawNumber) {
-    return null;
+    return null
   }
 
-  const number = Number(rawNumber);
+  const number = Number(rawNumber)
   if (!Number.isFinite(number)) {
-    return null;
+    return null
   }
 
   if (!HEX_PATTERN.test(hex)) {
-    return null;
+    return null
   }
 
-  return { text, number, hex };
+  return { text, number, hex }
 }
 
-function parseCsv(fileName, csvContent) {
+function parseCsv (fileName, csvContent) {
   const rows = (csvContent || '')
     .split(/\r?\n/)
     .map((row) => row.trim())
-    .filter((row) => row.length > 0);
+    .filter((row) => row.length > 0)
 
-  const dataRows = rows.slice(1);
+  const dataRows = rows.slice(1)
 
   const lines = dataRows
     .map(parseLine)
-    .filter((line) => line !== null);
+    .filter((line) => line !== null)
 
-  return { file: fileName, lines };
+  return { file: fileName, lines }
 }
 
-module.exports = { parseCsv };
+module.exports = { parseCsv }
