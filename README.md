@@ -72,7 +72,8 @@ npm test    # React Testing Library
 | Method | Path          | Description |
 |--------|---------------|--------------|
 | GET    | `/`           | Health check |
-| GET    | `/files/data` | Downloads and parses every file from the external API, returns `[{ file, lines: [{ text, number, hex }] }]` |
+| GET    | `/files/list` | Raw passthrough of the external API's file list, returns `{ files: [...] }` |
+| GET    | `/files/data` | Downloads and parses every file from the external API, returns `[{ file, lines: [{ text, number, hex }] }]`. Accepts an optional `?fileName=` query param to fetch/parse a single file instead of the whole list |
 
 ## Key technical decisions
 
@@ -87,9 +88,10 @@ npm test    # React Testing Library
 
 _(updated as optional branches land)_
 
-- [ ] `GET /files/list`
-- [ ] `?fileName=` filter on `/files/data`
-- [ ] StandardJS
-- [ ] Redux
-- [ ] Jest unit tests (frontend)
+- [x] `GET /files/list`
+- [x] `?fileName=` filter on `/files/data`
+- [x] StandardJS
+- [x] Redux
+- [x] Jest unit tests (frontend)
+- [x] fileName filter dropdown (frontend)
 - [ ] Docker / Docker Compose
