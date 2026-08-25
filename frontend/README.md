@@ -1,6 +1,6 @@
 # Frontend
 
-React app built with Create React App (Webpack + Babel) and React Bootstrap, that will consume the backend's `GET /files/data` endpoint.
+React app built with Create React App (Webpack + Babel) and React Bootstrap, that consumes the backend's `GET /files/data` and `GET /files/list` endpoints.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ npm install
 npm start
 ```
 
-The dev server listens on `http://localhost:3001` (kept off port 3000 so it doesn't clash with the backend API).
+The dev server listens on `http://localhost:3001` (kept off port 3000 so it doesn't clash with the backend API). The backend must be running at `http://localhost:3000` for the app to load any data.
 
 ## Build
 
