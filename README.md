@@ -21,7 +21,8 @@ Full Stack JS code challenge: a Node.js/Express API that consumes an external fi
 │   └── test/     Mocha + Chai + Sinon + Supertest + Nock
 └── frontend/    React + React Bootstrap app (Node 16)
     └── src/
-        ├── components/   FilesTable
+        ├── components/   FilesTable, FileNameFilter
+        ├── store/        Redux Toolkit slice and store
         └── services/     API client (fetch)
 ```
 
@@ -95,10 +96,10 @@ npm test    # React Testing Library
 
 ## Key technical decisions
 
-- **No environment variables or global config**: the challenge requires the code to run without depending on env vars or OS-specific setup, so all configuration (ports, external API URL/key) is hardcoded in `config.js` files rather than read from `process.env`.
+- **No environment variables or global config**: the challenge requires the code to run without depending on env vars or OS-specific setup. The backend's port and the external API URL/key are hardcoded in `backend/src/config/config.js`; the frontend's API base URL is hardcoded in `frontend/src/config.js`, and its dev server port is fixed in the `start` script in `frontend/package.json`. None of it is read from `process.env` at the application level.
 - **CORS**: the backend enables CORS (`cors` middleware) since the frontend dev server runs on a different origin (port) than the API.
 - **Retry with backoff**: `externalApiService.downloadFile` retries up to 3 attempts (250ms → 500ms exponential backoff) on network errors, `408`, `429` and `5xx` responses. `4xx` errors other than `408`/`429` fail immediately, since retrying them wouldn't change the outcome.
-- **Per-file error isolation**: if a single file fails to download (even after retries) or fails to parse, it's skipped and the rest of the files are still processed — one bad file doesn't take down the whole `/files/data` response. A failure listing the files themselves (`listFiles()`), however, is not recoverable and propagates as a 500.
+- **Per-file error isolation**: if a single file fails to download (even after retries), it's skipped and the rest of the files are still processed — one bad file doesn't take down the whole `/files/data` response. An invalid CSV *line* within a file is discarded the same way (see CSV validation below), while the file's other valid lines are kept. An *unexpected* error thrown while parsing (a real bug, not a validation failure), or a failure listing the files themselves (`listFiles()`), is not recoverable and propagates as a 500.
 - **CSV validation**: a line is discarded if it doesn't have exactly 4 columns, if `text` or `number` is empty, if `number` isn't a finite number, or if `hex` isn't a 32-character hex string. Empty files or files with no valid lines are returned as `{ file, lines: [] }`, not treated as errors.
 - **Layered backend**: `routes` (wiring) → `controllers` (request/response) → `services` (business logic), to keep route handlers thin as more endpoints/params get added.
 
