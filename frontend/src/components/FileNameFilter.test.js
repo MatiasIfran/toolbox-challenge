@@ -50,4 +50,14 @@ describe('FileNameFilter', () => {
 
     expect(store.getState().files.fileNameFilter).toBe('file1.csv');
   });
+
+  it('shows an error message when the file list fails to load', async () => {
+    filesApi.fetchFilesList.mockRejectedValue(new Error('Failed to fetch files list: 500 Internal Server Error'));
+
+    renderWithStore();
+
+    expect(await screen.findByText(/Unable to load the file list/)).toBeInTheDocument();
+    expect(screen.getByText(/Failed to fetch files list: 500 Internal Server Error/)).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeDisabled();
+  });
 });
