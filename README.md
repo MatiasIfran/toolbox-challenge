@@ -50,6 +50,20 @@ npm start
 
 Open `http://localhost:3001` in the browser once both are running.
 
+## Running with Docker
+
+No Node install needed — just Docker.
+
+```bash
+docker compose up --build
+```
+
+This builds and starts both services:
+- Backend (`node:14-alpine`) on `http://localhost:3000`
+- Frontend built with `npm run build` and served by `nginx:1.27-alpine` on `http://localhost:3001`
+
+Open `http://localhost:3001` once both containers are up. Stop with `docker compose down`.
+
 ## Tests
 
 ```bash
@@ -94,4 +108,4 @@ _(updated as optional branches land)_
 - [x] Redux
 - [x] Jest unit tests (frontend)
 - [x] fileName filter dropdown (frontend)
-- [ ] Docker / Docker Compose
+- [x] Docker / Docker Compose
