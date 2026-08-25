@@ -2,7 +2,7 @@ import reducer, { setFileNameFilter, loadFilesList, loadFilesData } from './file
 
 const initialState = {
   list: { items: [], status: 'idle', error: null },
-  data: { items: [], status: 'idle', error: null },
+  data: { items: [], status: 'idle', error: null, requestId: null },
   fileNameFilter: ''
 };
 
@@ -42,25 +42,83 @@ describe('filesSlice', () => {
   });
 
   describe('loadFilesData', () => {
-    it('sets data status to loading on pending', () => {
-      const state = reducer(initialState, { type: loadFilesData.pending.type });
+    it('sets data status to loading and stores the requestId on pending', () => {
+      const state = reducer(initialState, {
+        type: loadFilesData.pending.type,
+        meta: { requestId: 'req-1' }
+      });
       expect(state.data.status).toBe('loading');
+      expect(state.data.requestId).toBe('req-1');
     });
 
     it('stores the data and sets status to succeeded on fulfilled', () => {
+      const pendingState = reducer(initialState, {
+        type: loadFilesData.pending.type,
+        meta: { requestId: 'req-1' }
+      });
       const payload = [{ file: 'file1.csv', lines: [] }];
-      const state = reducer(initialState, { type: loadFilesData.fulfilled.type, payload });
+      const state = reducer(pendingState, {
+        type: loadFilesData.fulfilled.type,
+        payload,
+        meta: { requestId: 'req-1' }
+      });
       expect(state.data.status).toBe('succeeded');
       expect(state.data.items).toEqual(payload);
     });
 
     it('stores the error and sets status to failed on rejected', () => {
-      const state = reducer(initialState, {
+      const pendingState = reducer(initialState, {
+        type: loadFilesData.pending.type,
+        meta: { requestId: 'req-1' }
+      });
+      const state = reducer(pendingState, {
         type: loadFilesData.rejected.type,
-        error: { message: 'boom' }
+        error: { message: 'boom' },
+        meta: { requestId: 'req-1' }
       });
       expect(state.data.status).toBe('failed');
       expect(state.data.error).toBe('boom');
+    });
+
+    it('ignores a fulfilled action from a request superseded by a newer one', () => {
+      const firstPending = reducer(initialState, {
+        type: loadFilesData.pending.type,
+        meta: { requestId: 'req-1' }
+      });
+      const secondPending = reducer(firstPending, {
+        type: loadFilesData.pending.type,
+        meta: { requestId: 'req-2' }
+      });
+
+      const state = reducer(secondPending, {
+        type: loadFilesData.fulfilled.type,
+        payload: [{ file: 'stale.csv', lines: [] }],
+        meta: { requestId: 'req-1' }
+      });
+
+      expect(state.data.status).toBe('loading');
+      expect(state.data.items).toEqual([]);
+      expect(state.data.requestId).toBe('req-2');
+    });
+
+    it('ignores a rejected action from a request superseded by a newer one', () => {
+      const firstPending = reducer(initialState, {
+        type: loadFilesData.pending.type,
+        meta: { requestId: 'req-1' }
+      });
+      const secondPending = reducer(firstPending, {
+        type: loadFilesData.pending.type,
+        meta: { requestId: 'req-2' }
+      });
+
+      const state = reducer(secondPending, {
+        type: loadFilesData.rejected.type,
+        error: { message: 'stale error' },
+        meta: { requestId: 'req-1' }
+      });
+
+      expect(state.data.status).toBe('loading');
+      expect(state.data.error).toBeNull();
     });
   });
 });

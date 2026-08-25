@@ -1,9 +1,17 @@
 const { expect } = require('chai')
 const nock = require('nock')
-const { EXTERNAL_API_BASE_URL } = require('../src/config/config')
+const { EXTERNAL_API_BASE_URL, EXTERNAL_API_KEY } = require('../src/config/config')
 const { listFiles, downloadFile } = require('../src/services/externalApiService')
 
 describe('externalApiService', () => {
+  before(() => {
+    nock.disableNetConnect()
+  })
+
+  after(() => {
+    nock.enableNetConnect()
+  })
+
   afterEach(() => {
     nock.cleanAll()
   })
@@ -17,6 +25,17 @@ describe('externalApiService', () => {
       const files = await listFiles()
 
       expect(files).to.deep.equal(['file1.csv', 'file2.csv'])
+    })
+
+    it('sends the API key as a bearer token in the Authorization header', async () => {
+      const scope = nock(EXTERNAL_API_BASE_URL)
+        .matchHeader('authorization', `Bearer ${EXTERNAL_API_KEY}`)
+        .get('/v1/secret/files')
+        .reply(200, { files: [] })
+
+      await listFiles()
+
+      expect(scope.isDone()).to.equal(true)
     })
 
     it('throws when the external API returns an error', async () => {
@@ -42,6 +61,17 @@ describe('externalApiService', () => {
       const content = await downloadFile('file1.csv')
 
       expect(content).to.equal('file,text,number,hex')
+      expect(scope.isDone()).to.equal(true)
+    })
+
+    it('sends the API key as a bearer token in the Authorization header', async () => {
+      const scope = nock(EXTERNAL_API_BASE_URL)
+        .matchHeader('authorization', `Bearer ${EXTERNAL_API_KEY}`)
+        .get('/v1/secret/file/file1.csv')
+        .reply(200, 'content')
+
+      await downloadFile('file1.csv')
+
       expect(scope.isDone()).to.equal(true)
     })
 
