@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Table from 'react-bootstrap/Table';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
-import { fetchFilesData } from '../services/filesApi';
+import { loadFilesData } from '../store/filesSlice';
 
 function flattenRows(files) {
   return files.flatMap((file) =>
@@ -17,37 +18,23 @@ function flattenRows(files) {
 }
 
 function FilesTable() {
-  const [rows, setRows] = useState([]);
-  const [status, setStatus] = useState('loading');
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { items, status, error } = useSelector((state) => state.files.data);
+  const fileNameFilter = useSelector((state) => state.files.fileNameFilter);
 
   useEffect(() => {
-    let isMounted = true;
+    dispatch(loadFilesData(fileNameFilter || undefined));
+  }, [dispatch, fileNameFilter]);
 
-    fetchFilesData()
-      .then((files) => {
-        if (!isMounted) return;
-        setRows(flattenRows(files));
-        setStatus('success');
-      })
-      .catch((err) => {
-        if (!isMounted) return;
-        setError(err.message);
-        setStatus('error');
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (status === 'loading') {
+  if (status === 'loading' || status === 'idle') {
     return <Spinner animation="border" role="status" />;
   }
 
-  if (status === 'error') {
+  if (status === 'failed') {
     return <Alert variant="danger">{error}</Alert>;
   }
+
+  const rows = flattenRows(items);
 
   return (
     <Table striped bordered hover responsive>

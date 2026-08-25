@@ -1,12 +1,22 @@
-const filesService = require('../services/filesService');
+const filesService = require('../services/filesService')
 
-async function getFilesData(req, res, next) {
+async function getFilesList (req, res, next) {
   try {
-    const data = await filesService.getFilesData();
-    res.json(data);
+    const files = await filesService.getFilesList()
+    res.json({ files })
   } catch (err) {
-    next(err);
+    next(err)
   }
 }
 
-module.exports = { getFilesData };
+async function getFilesData (req, res, next) {
+  try {
+    const { fileName } = req.query
+    const data = await filesService.getFilesData(fileName)
+    res.json(data)
+  } catch (err) {
+    next(err)
+  }
+}
+
+module.exports = { getFilesList, getFilesData }

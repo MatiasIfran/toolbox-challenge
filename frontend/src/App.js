@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Container from 'react-bootstrap/Container';
+import FileNameFilter from './components/FileNameFilter';
 import FilesTable from './components/FilesTable';
 import './App.css';
 
@@ -12,6 +13,7 @@ function App() {
         </Container>
       </header>
       <Container className="py-4">
+        <FileNameFilter />
         <FilesTable />
       </Container>
     </>
