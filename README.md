@@ -27,12 +27,30 @@ Full Stack JS code challenge: a Node.js/Express API that consumes an external fi
 
 ## Requirements
 
+Either Docker, or Node.js if running the two parts locally:
+
 - **Backend**: Node.js 14.x
 - **Frontend**: Node.js 16.x
 
 Since the two parts target different Node versions, use a version manager (e.g. [nvm-windows](https://github.com/coreybutler/nvm-windows) on Windows, or [nvm](https://github.com/nvm-sh/nvm) on macOS/Linux) to switch between them per terminal.
 
-## Running both
+## Running the app
+
+### Option A — with Docker
+
+No Node install needed — just Docker.
+
+```bash
+docker compose up --build
+```
+
+This builds and starts both services:
+- Backend (`node:14-alpine`) on `http://localhost:3000`
+- Frontend built with `npm run build` and served by `nginx:1.27-alpine` on `http://localhost:3001`
+
+Stop with `docker compose down`.
+
+### Option B — locally with Node
 
 ```bash
 # Terminal 1 — backend (Node 14)
@@ -48,21 +66,7 @@ npm start
 # -> http://localhost:3001
 ```
 
-Open `http://localhost:3001` in the browser once both are running.
-
-## Running with Docker
-
-No Node install needed — just Docker.
-
-```bash
-docker compose up --build
-```
-
-This builds and starts both services:
-- Backend (`node:14-alpine`) on `http://localhost:3000`
-- Frontend built with `npm run build` and served by `nginx:1.27-alpine` on `http://localhost:3001`
-
-Open `http://localhost:3001` once both containers are up. Stop with `docker compose down`.
+Either way, open `http://localhost:3001` in the browser once both services are running.
 
 ## Tests
 
